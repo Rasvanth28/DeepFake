@@ -5,12 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <header>
-        Bye
-    </header>
+    <div class="banner-header">
+        <header class="title">DEEP - FAKE</header>
+    </div>
+
+    <div class="banner-nav">
+        <nav>
+            <a href="index.html" class="link-space">Home</a>
+            <a href="about.html" target="_blank">About</a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <p>Paste Your Video Here</p>
+    </div>
+
+    <form class="box" method="post" actionn="" enctype="multipart/form-data">
+        <div class="box_input">
+            <input class="box_file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected"
+                multiple />
+            <label for="file"><strong>Choose a file</strong><span class="box_dragndrop"> or drag it here.</span></label>
+            <button class="box_button" type="submit">Upload</button>
+        </div>
+        <div class="box_uploading">Uploading</div>
+        <div class="box_success">Done!</div>
+        <div class="box_error">Error!</div>
+    </form>
 </body>
 
 </html>

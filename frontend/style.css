@@ -1,0 +1,45 @@
+* {
+    margin: 0%;
+    padding: 0%;
+    box-sizing: border-box;
+}
+
+.title {
+    text-align: center;
+    font-weight: bolder;
+    font-size: larger;
+    color: white;
+}
+
+.banner-header {
+    background-color: #80481C
+}
+
+.banner-nav {
+    background-color: #EBDDBE;
+    text-align: center;
+}
+
+.link-space {
+    margin-right: 10%;
+}
+
+a {
+    text-decoration: none;
+    color: #4A4A4A;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    color: #8A3324;
+}
+
+.box_dragndrop,
+.box_uploading,
+.box_success,
+.box_error {
+    display: none;
+}
