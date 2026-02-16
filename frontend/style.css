@@ -33,13 +33,62 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 20vh;
     color: #8A3324;
+    height: 10vh;
 }
 
-.box_dragndrop,
-.box_uploading,
-.box_success,
-.box_error {
+.drop-down {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    align-items: center;
+    margin-left: 20%;
+    height: 30vh;
+}
+
+#drop-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 500px;
+    max-width: 100%;
+    height: 200px;
+    padding: 1em;
+    border: 2px dashed #cccccc;
+    border-radius: 4px;
+    color: slategray;
+    cursor: pointer;
+}
+
+#file-input {
     display: none;
+}
+
+#preview {
+    width: 500px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    list-style: none;
+    padding: 0;
+}
+
+#preview li {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin: 0;
+    width: 100%;
+    height: 100px;
+}
+
+#preview vid {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+#clear-btn {
+    width: 10vh;
 }

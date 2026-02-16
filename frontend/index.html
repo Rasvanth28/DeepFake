@@ -24,17 +24,16 @@
         <p>Paste Your Video Here</p>
     </div>
 
-    <form class="box" method="post" actionn="" enctype="multipart/form-data">
-        <div class="box_input">
-            <input class="box_file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected"
-                multiple />
-            <label for="file"><strong>Choose a file</strong><span class="box_dragndrop"> or drag it here.</span></label>
-            <button class="box_button" type="submit">Upload</button>
-        </div>
-        <div class="box_uploading">Uploading</div>
-        <div class="box_success">Done!</div>
-        <div class="box_error">Error!</div>
-    </form>
+    <div class="drop-down">
+        <label id="drop-zone">
+            Drop videos here, or click to upload.
+            <input type="file" id="file-input" multiple accept="video/*" />
+        </label>
+        <ul id="preview"></ul>
+        <button id="clear-btn">Clear</button>
+    </div>
+
+    <script src="../backend/dragAndDrop.js"></script>
 </body>
 
 </html>
