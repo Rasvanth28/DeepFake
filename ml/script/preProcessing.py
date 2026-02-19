@@ -11,6 +11,14 @@ import numpy as np
 import seaborn as sns
 from mtcnn import MTCNN
 import random
+from tensorflow.keras.applications import InceptionResNetV2
+from tensorflow.keras.applications.inception_resnet_v2 import preprocess_input
+from tensorflow.keras.preprocessing import image
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.preprocessing import StandardScaler
+import joblib
+
 
 # %%
 # Extracting the dataset
@@ -246,9 +254,7 @@ def crop_and_save_face_mtcnn(img_path, save_path):
         source = "MTCNN"
     else:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces_haar = detector_haar.detectMultiScale(gray, 1.1, 4)
-        if len(faces_haar) == 0:
-            faces_haar = detector_haar.detectMultiScale(gray, 1.05, 1)
+        faces_haar = detector_haar.detectMultiScale(gray, 1.3, 4)
         if len(faces_haar) > 0:
             x, y, w, h = max(faces_haar, key=lambda rect: rect[2] * rect[3])
             source = "Haar"
@@ -285,3 +291,61 @@ for label in classes:
 print(f"Final Stats: {stats}")
 
 # %%
+base_model = InceptionResNetV2(weights="imagenet", include_top=False, pooling="avg")
+data_dir = "../storage/faces"
+classes = ["real", "fake"]
+
+
+def extract_features(directory, sample_count=1000):
+    features = []
+    labels = []
+
+    for label_name in classes:
+        class_dir = os.path.join(directory, label_name)
+        if not os.path.exists(class_dir):
+            continue
+
+        print(f"Extracting features form {label_name}...")
+        img_files = [f for f in os.listdir(class_dir) if f.endswith(".jpg")][
+            :sample_count
+        ]
+
+        for img_file in tqdm(img_files):
+            img_path = os.path.join(class_dir, img_file)
+
+            try:
+                img = image.load_img(img_path, target_size=(299, 299))
+                x = image.img_to_array(img)
+                x = np.expand_dims(x, axis=0)
+                x = preprocess_input(x)
+                feature = base_model.predict(x, verbose=0)
+                features.append(feature.flatten())
+                labels.append(0 if label_name == "real" else 1)
+            except Exception as e:
+                print(f"Error processing {img_file}:{e}")
+
+    return np.array(features), np.array(labels)
+
+
+X_features, y_labels = extract_features(data_dir, sample_count=2000)
+print(f"\nFeature Matrix Shape: {X_features.shape}")
+
+
+# %%
+X_train, X_test, y_train, y_test = train_test_split(
+    X_features, y_labels, test_size=0.2, random_state=43, stratify=y_labels
+)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+clf = SVC(kernel="rbf", C=1.0, gamma="scale", probability=True, class_weight="balanced")
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+
+print("SVM - Visual Artifacts")
+print(f"Accuracy: {accuracy_score(y_test,y_pred):.2%}")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=["Real", "Fake"]))
+
+joblib.dump(clf, "deepfake_svm_model.pkl")
+joblib.dump(scaler, "feature_scaler.pkl")
