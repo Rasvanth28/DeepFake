@@ -71,8 +71,6 @@ fileInput.addEventListener("change", (e) => {
     displayVideos(e.target.files);
 })
 
-
-
 // Clear Button
 
 const clearBtn = document.getElementById("clear-btn");

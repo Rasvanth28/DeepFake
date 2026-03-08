@@ -1,9 +1,11 @@
 # %%
+from pathlib import Path
+
 import cv2
 import os
 from tqdm import tqdm
 import pandas as pd
-from preTraining import is_metadata_fake, crop_and_save_face_mtcnn, base_model
+from preTraining import is_metadata_fake, crop_face_mtcnn, base_model
 import numpy as np
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.inception_resnet_v2 import preprocess_input
@@ -30,92 +32,47 @@ def save_frames(row, base_dir="../storage/temp/frames"):
 
 
 # %%
-def extract_features(filepath):
+def extract_features(imageList):
     features = []
-
-    img_files = [f for f in os.listdir(filepath) if f.endswith(".jpg")]
-    for img_file in tqdm(img_files):
-        img_path = os.path.join(filepath, img_file)
+    for image in imageList:
         try:
-            img = image.load_img(img_path, target_size=(299, 299))
-            x = image.img_to_array(img)
+            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image_resized = cv2.resize(image_rgb, (299, 299))
+            x = image.img_to_array(image_resized)
             x = np.expand_dims(x, axis=0)
             x = preprocess_input(x)
             feature = base_model.predict(x, verbose=0)
             features.append(feature.flatten())
         except Exception as e:
-            print(f"Error processing {img_file}:{e}")
+            print(f"Error processing image matrix {e}")
     return np.array(features)
 
 
 # %%
-def predict(directory):
-    data = []
-    videopath = os.path.join(directory, "videos")
-    framepath = os.path.join(directory, "frames")
-    facepath = os.path.join(directory, "faces")
+def predict(imageList):
+    faceImages = []
+    for img in imageList:
+        face = crop_face_mtcnn(img)
+        if face is not None:
+            faceImages.append(face)
+    if not faceImages:
+        return "No faces detected", 0.0
 
-    os.makedirs(framepath, exist_ok=True)
-    os.makedirs(facepath, exist_ok=True)
+    path = Path(__file__).resolve().parent
 
-    if not os.path.exists(videopath):
-        print(f"Error: {videopath} does not exist.")
-        return None
+    features = extract_features(faceImages)
+    clf = joblib.load(path / "../model/deepfake_svm_model.pkl")
+    scaler = joblib.load(path / "../model/feature_scaler.pkl")
 
-    videofiles = os.listdir(videopath)
-    framefiles = os.listdir(framepath)
-    facefiles = os.listdir(facepath)
-    for filename in tqdm(videofiles):
-        if filename.endswith(".mp4"):
-            filepath = os.path.join(videopath, filename)
+    X_scaled = scaler.transform(features.reshape(1, -1))
+    predicitons = clf.predict(X_scaled)
+    probabilities = clf.predict_proba(X_scaled)
 
-            cap = cv2.VideoCapture(filepath)
-            if cap.isOpened():
-                fps = cap.get(cv2.CAP_PROP_FPS)
-                data.append({"filename": filename, "fps": fps})
-            cap.release()
-    df = pd.DataFrame(data)
+    final_prediction = pd.Series(predicitons).mode()[0]
+    avg_confidence = probabilities[:, 1].mean()
 
-    if df.empty:
-        print("No video files found.")
-        return df
-
-    df["predicted-label"] = df["fps"].apply(is_metadata_fake)
-    print(df.head())
-    tqdm.pandas()
-    df.progress_apply(save_frames, args=(framepath,), axis=1)
-    for frames in tqdm(framefiles):
-        img_in = os.path.join(framepath, frames)
-        img_out = os.path.join(facepath, frames)
-        crop_and_save_face_mtcnn(img_path=img_in, save_path=img_out)
-    features = extract_features(facepath)
-    clf = joblib.load("../model/deepfake_svm_model.pkl")
-    scaler = joblib.load("../model/feature_scaler.pkl")
-    X_scaled = scaler.transform(features)
-    prediciton = clf.predict(X_scaled)
-    probability = clf.predict_proba(X_scaled)
-    fake_confidence = probability[:, 1]
-    face_filenames = [f for f in os.listdir(facepath) if f.endswith(".jpg")]
-    frames_df = pd.DataFrame(
-        {
-            "full_filename": face_filenames,
-            "prediction": prediciton,
-            "confidence": fake_confidence,
-        }
-    )
-
-    frames_df["video_name"] = frames_df["full_filename"].apply(
-        lambda x: x.split("_")[0] + ".mp4"
-    )
-
-    video_results = (
-        frames_df.groupby("video_name")
-        .agg({"prediction": lambda x: x.mode()[0], "confidence": "mean"})
-        .reset_index()
-    )
-
-    print(video_results)
+    label = "Fake" if final_prediction == 1 else "Real"
+    return label, float(avg_confidence)
 
 
-directory = "../storage/temp/"
-predict(directory=directory)
+# %%

@@ -76,8 +76,7 @@ def save_frames(row, base_dir="../storage/frames"):
 
 
 # %%
-def crop_and_save_face_mtcnn(img_path, save_path):
-    img = cv2.imread(img_path)
+def crop_face_mtcnn(img):
     if img is None:
         return
 
@@ -91,13 +90,11 @@ def crop_and_save_face_mtcnn(img_path, save_path):
     if results:
         best_face = max(results, key=lambda x: x["confidence"])
         x, y, w, h = best_face["box"]
-        source = "MTCNN"
     else:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         faces_haar = detector_haar.detectMultiScale(gray, 1.3, 4)
         if len(faces_haar) > 0:
             x, y, w, h = max(faces_haar, key=lambda rect: rect[2] * rect[3])
-            source = "Haar"
         else:
             return None
     pad_w = int(w * 0.2)
@@ -109,9 +106,8 @@ def crop_and_save_face_mtcnn(img_path, save_path):
     face_img = img[y1:y2, x1:x2]
     if face_img.size <= 0:
         return None
-    face_img = cv2.resize(face_img, (224, 224))
-    cv2.imwrite(save_path, face_img)
-    return source
+    faceImg = cv2.resize(face_img, (224, 224))
+    return faceImg
 
 
 # %%
@@ -204,9 +200,14 @@ if __name__ == "__main__":
             in_path = os.path.join(class_path, filename)
             out_path = os.path.join(output_dir, label, filename)
 
-            res = crop_and_save_face_mtcnn(in_path, out_path)
-            if res:
-                stats[res] += 1
+            img = cv2.imread(in_path)
+            if img is None:
+                stats["Skipped"] += 1
+                continue
+            processed_face = crop_face_mtcnn(img)
+            if processed_face is not None:
+                cv2.imwrite(out_path, processed_face)
+                stats["MTCNN"] += 1
             else:
                 stats["Skipped"] += 1
 
@@ -227,8 +228,8 @@ if __name__ == "__main__":
     clf = SVC(kernel="rbf", probability=True, class_weight="balanced")
     clf.fit(X_train_s, y_train)
 
-    joblib.dump(clf, "deepfake_svm_model.pkl")
-    joblib.dump(scaler, "feature_scaler.pkl")
+    joblib.dump(clf, "deepfake_svm_model.pkl", compress=0)
+    joblib.dump(scaler, "feature_scaler.pkl", compress=0)
 
     print("\n--- Pipeline Complete ---")
     print(f"SVM Accuracy on Test Set: {clf.score(X_test_s, y_test):.2%}")

@@ -31,9 +31,18 @@
         </label>
         <ul id="preview"></ul>
         <button id="clear-btn">Clear</button>
+        <button id="submit-btn" onclick="processAndSendFrames()">Analyze</button>
+    </div>
+
+    <div class="result-section">
+        <p>Result: <spand id="result">
+        </p>
+        <p>Confidence: <span id="confidence"></span></p>
     </div>
 
     <script src="../backend/dragAndDrop.js"></script>
+    <script src="../backend/processAndTransfer.js"></script>
+
 </body>
 
 </html>
