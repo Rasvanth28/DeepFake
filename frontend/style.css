@@ -240,3 +240,184 @@ body {
 .badge.status.fake { color: var(--danger); border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.1); }
 .badge.status.real { color: var(--success); border-color: rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); }
 .badge.confidence { color: var(--primary); }
+
+/* Glassmorphic Overlay Card UI */
+.video-wrapper {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    width: 300px;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+    flex-shrink: 0;
+}
+
+.video-wrapper video {
+    width: 100%;
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.video-status.overlay-card {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 17, 26, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 10;
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.video-status.overlay-card.active {
+    opacity: 1;
+}
+
+/* Hide overlay on hover so they can play the video */
+.video-wrapper:hover .video-status.overlay-card.active {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.overlay-icon {
+    font-size: 3.5rem;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.1));
+}
+
+.overlay-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.overlay-title.fake { color: var(--danger); text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+.overlay-title.real { color: var(--success); text-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+
+.video-filename {
+    margin-left: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    word-break: break-all;
+}
+
+/* About Page Styles */
+.about-section {
+    margin-top: 3rem;
+}
+
+.about-section h3 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(255,255,255,0.05);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+/* Timeline */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    padding-left: 20px;
+}
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--primary), var(--accent), transparent);
+}
+.timeline-step {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+    position: relative;
+    z-index: 1;
+}
+.step-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 800;
+    color: var(--primary);
+    flex-shrink: 0;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+.step-content {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 12px;
+    flex: 1;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+.step-content:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.05);
+}
+.step-content h4 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+}
+.step-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Tech Grid */
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+.tech-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+.tech-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.1);
+}
+.tech-card h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    font-size: 1.2rem;
+}
+.tech-card p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+.tech-card.future {
+    border-left: 3px solid var(--accent);
+}
+.tech-card.future:hover {
+    border-color: var(--accent);
+    box-shadow: 0 10px 20px rgba(139, 92, 246, 0.15);
+}

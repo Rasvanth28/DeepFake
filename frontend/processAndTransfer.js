@@ -14,6 +14,13 @@ async function processAndSendFrames() {
 
     submitBtn.disabled = true;
     if (loader) loader.classList.remove('hidden');
+    
+    // Hide old summary if any, starting new batch
+    const summaryBoard = document.getElementById("summary-board");
+    if (summaryBoard) summaryBoard.classList.add('hidden');
+    
+    let batchStartTime = performance.now();
+    let anyProcessed = false;
 
     for (let v = 0; v < files.length; v++) {
         const currentFile = files[v];
@@ -25,9 +32,16 @@ async function processAndSendFrames() {
         if (statusDiv && statusDiv.dataset.analyzed === "true") {
             continue;
         }
+        
+        anyProcessed = true;
+        const videoStartTime = performance.now();
 
         if (statusDiv) {
-            statusDiv.innerHTML = `<span class="badge status">Extracting frames...</span>`;
+            statusDiv.innerHTML = `
+                <div class="loader"></div>
+                <div style="margin-top: 1rem; font-weight: 600;">Extracting frames...</div>
+            `;
+            statusDiv.classList.add("active");
         }
 
         const video = document.createElement('video');
@@ -59,25 +73,41 @@ async function processAndSendFrames() {
                     const result = await response.json();
                     if (statusDiv) {
                         statusDiv.dataset.analyzed = "true";
+                        const processTimeSec = (performance.now() - videoStartTime) / 1000;
+                        const processTimeStr = processTimeSec < 60 ? `${processTimeSec.toFixed(2)}s` : `${Math.floor(processTimeSec / 60)}m ${Math.floor(processTimeSec % 60)}s`;
+                        window.summaryStats.total++;
+                        
                         if (result.prediction === "No faces detected" || result.prediction.includes("Error")) {
+                            if (result.prediction === "No faces detected") window.summaryStats.noFace++;
                             statusDiv.innerHTML = `
-                                <span class="badge status fake">${result.prediction}</span>
-                                <span class="badge confidence">-</span>
+                                <div class="overlay-title fake">${result.prediction}</div>
+                                <div class="badge confidence" style="margin-top:0.5rem;">-</div>
+                                <div style="margin-top:0.5rem; font-size:0.9rem; opacity:0.8; font-weight: 600;">Time: ${processTimeStr}</div>
                             `;
                         } else {
                             const isFake = result.prediction.toLowerCase().includes('fake');
+                            if (isFake) window.summaryStats.fake++; else window.summaryStats.real++;
+                            
                             const displayConfidence = isFake ? result.confidence : 1 - result.confidence;
                             statusDiv.innerHTML = `
-                                <span class="badge status ${isFake ? 'fake' : 'real'}">${result.prediction}</span>
-                                <span class="badge confidence">Confidence: ${(displayConfidence * 100).toFixed(2)}%</span>
+                                <div class="overlay-title ${isFake ? 'fake' : 'real'}">${result.prediction}</div>
+                                <div class="badge confidence" style="margin-top:0.5rem;">Conf: ${(displayConfidence * 100).toFixed(0)}%</div>
+                                <div style="margin-top:0.5rem; font-size:0.9rem; opacity:0.8; font-weight: 600;">Time: ${processTimeStr}</div>
                             `;
                         }
+                        statusDiv.classList.add("active");
                     }
                 } else {
-                    if (statusDiv) statusDiv.innerHTML = `<span class="badge status fake">Error: ${response.statusText}</span>`;
+                    if (statusDiv) {
+                        statusDiv.innerHTML = `<div class="overlay-title fake">Error</div>`;
+                        statusDiv.classList.add("active");
+                    }
                 }
             } catch (error) {
-                if (statusDiv) statusDiv.innerHTML = `<span class="badge status fake">Connection Failed</span>`;
+                if (statusDiv) {
+                    statusDiv.innerHTML = `<div class="overlay-title fake">Connection Failed</div>`;
+                    statusDiv.classList.add("active");
+                }
             }
             continue;
         }
@@ -127,25 +157,75 @@ async function processAndSendFrames() {
                 const result = await response.json();
                 if (statusDiv) {
                     statusDiv.dataset.analyzed = "true";
+                    const processTimeSec = (performance.now() - videoStartTime) / 1000;
+                    const processTimeStr = processTimeSec < 60 ? `${processTimeSec.toFixed(2)}s` : `${Math.floor(processTimeSec / 60)}m ${Math.floor(processTimeSec % 60)}s`;
+                    window.summaryStats.total++;
+                    
                     if (result.prediction === "No faces detected" || result.prediction.includes("Error")) {
+                        if (result.prediction === "No faces detected") window.summaryStats.noFace++;
                         statusDiv.innerHTML = `
-                            <span class="badge status fake">${result.prediction}</span>
-                            <span class="badge confidence">-</span>
+                            <div class="overlay-title fake">${result.prediction}</div>
+                            <div class="badge confidence" style="margin-top:0.5rem;">-</div>
+                            <div style="margin-top:0.5rem; font-size:0.9rem; opacity:0.8; font-weight: 600;">Time: ${processTimeStr}</div>
                         `;
                     } else {
                         const isFake = result.prediction.toLowerCase().includes('fake');
+                        if (isFake) window.summaryStats.fake++; else window.summaryStats.real++;
+                        
                         const displayConfidence = isFake ? result.confidence : 1 - result.confidence;
                         statusDiv.innerHTML = `
-                            <span class="badge status ${isFake ? 'fake' : 'real'}">${result.prediction}</span>
-                            <span class="badge confidence">Confidence: ${(displayConfidence * 100).toFixed(2)}%</span>
+                            <div class="overlay-title ${isFake ? 'fake' : 'real'}">${result.prediction}</div>
+                            <div class="badge confidence" style="margin-top:0.5rem;">Conf: ${(displayConfidence * 100).toFixed(0)}%</div>
+                            <div style="margin-top:0.5rem; font-size:0.9rem; opacity:0.8; font-weight: 600;">Time: ${processTimeStr}</div>
                         `;
                     }
+                    statusDiv.classList.add("active");
                 }
             } else {
-                if (statusDiv) statusDiv.innerHTML = `<span class="badge status fake">Error: ${response.statusText}</span>`;
+                if (statusDiv) {
+                    statusDiv.innerHTML = `<div class="overlay-title fake">Error</div>`;
+                    statusDiv.classList.add("active");
+                }
             }
         } catch (error) {
-            if (statusDiv) statusDiv.innerHTML = `<span class="badge status fake">Connection Failed</span>`;
+            if (statusDiv) {
+                statusDiv.innerHTML = `<div class="overlay-title fake">Connection Failed</div>`;
+                statusDiv.classList.add("active");
+            }
+        }
+    }
+
+    if (anyProcessed) {
+        let batchEndTime = performance.now();
+        window.summaryStats.totalTimeMs += (batchEndTime - batchStartTime);
+        
+        if (summaryBoard) {
+            const stats = window.summaryStats;
+            
+            const formatTime = (ms) => {
+                const totalS = ms / 1000;
+                if (totalS < 60) return `${totalS.toFixed(2)}s`;
+                return `${Math.floor(totalS / 60)}m ${Math.floor(totalS % 60)}s`;
+            };
+
+            const avgMs = stats.total > 0 ? (stats.totalTimeMs / stats.total) : 0;
+            const totalTimeStr = formatTime(stats.totalTimeMs);
+            const avgTimeStr = formatTime(avgMs);
+            
+            summaryBoard.innerHTML = `
+                <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.5rem;">Batch Analysis Complete</h3>
+                <div class="badge-container" style="gap: 1.5rem;">
+                    <span class="badge" style="color: white; border-color: rgba(255,255,255,0.2);">Videos: ${stats.total}</span>
+                    <span class="badge status fake" style="font-size: 1.1rem;">Fake: ${stats.fake}</span>
+                    <span class="badge status real" style="font-size: 1.1rem;">Authentic: ${stats.real}</span>
+                    <span class="badge" style="color: var(--text-secondary); border-color: rgba(255,255,255,0.1); font-size: 1.1rem;">No Face: ${stats.noFace}</span>
+                </div>
+                <div class="badge-container" style="gap: 1.5rem; margin-top: 1.5rem;">
+                    <span class="badge confidence" style="font-size: 1.1rem;">Total Time: ${totalTimeStr}</span>
+                    <span class="badge confidence" style="font-size: 1.1rem;">Average Time: ${avgTimeStr} / video</span>
+                </div>
+            `;
+            summaryBoard.classList.remove("hidden");
         }
     }
 

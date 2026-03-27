@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About DeepFake - Technology & Future</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=6">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob primary"></div>
+        <div class="blob secondary"></div>
+    </div>
+
+    <header class="glass-header">
+        <h1 class="logo">Deep<span>Fake</span></h1>
+        <nav>
+            <a href="index.html">Analyze</a>
+            <a href="metrics.html">Metrics</a>
+            <a href="about.html" class="active">About</a>
+        </nav>
+    </header>
+
+    <main class="container glass-panel" style="max-width: 900px;">
+        <div class="header-text">
+            <h2>The Mission</h2>
+            <p>Combating digital misinformation and authenticating media through state-of-the-art Artificial Intelligence.</p>
+        </div>
+
+        <!-- How it Works -->
+        <section class="about-section">
+            <h3>⚙️ How It Works</h3>
+            <div class="timeline">
+                <div class="timeline-step">
+                    <div class="step-icon">1</div>
+                    <div class="step-content">
+                        <h4>Frame Extraction</h4>
+                        <p>The system robustly parses video uploads (either locally via HTML5 or through backend OpenCV fallback) to sample uniform frames.</p>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-icon">2</div>
+                    <div class="step-content">
+                        <h4>Facial Recognition</h4>
+                        <p>Utilizes MTCNN (Multi-task Cascaded Convolutional Networks) to isolate and crop human faces from the raw digital frames.</p>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-icon">3</div>
+                    <div class="step-content">
+                        <h4>Deep Learning</h4>
+                        <p>Leverages the InceptionResNetV2 neural network architecture to meticulously extract high-dimensional deepfake feature vectors.</p>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-icon">4</div>
+                    <div class="step-content">
+                        <h4>Final Verdict</h4>
+                        <p>A Support Vector Machine (SVM) classifies the features and mathematically computes the confidence percentage for authenticity.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tech Stack -->
+        <section class="about-section">
+            <h3>💻 Technology Stack</h3>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h4>Frontend</h4>
+                    <p>Vanilla JavaScript, Modern Glassmorphism CSS</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Backend Engine</h4>
+                    <p>Python 3, FastAPI, Uvicorn Server</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Machine Learning</h4>
+                    <p>TensorFlow, Keras, MTCNN, Scikit-Learn</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Limitations -->
+        <section class="about-section">
+            <h3>⚠️ Current Limitations</h3>
+            <div class="tech-card" style="border-left: 3px solid var(--danger);">
+                <h4>Face-Dependent Detection</h4>
+                <p>The current pipeline strictly requires facial data to function. If no face is detected in the video frame, the AI cannot perform analysis on background manipulation, synthetic environments, or pure audio deepfakes.</p>
+            </div>
+        </section>
+
+        <!-- Future Plans -->
+        <section class="about-section">
+            <h3>🚀 Future Roadmap</h3>
+            <div class="tech-grid">
+                <div class="tech-card future">
+                    <h4>Multi-Modal Analysis (Voice)</h4>
+                    <p>Expand detection horizons beyond visual artifacts to spot audio deepfakes and AI voice cloning algorithms.</p>
+                </div>
+                <div class="tech-card future">
+                    <h4>Photo Authenticity</h4>
+                    <p>Introduce single-image processing pipelines to detect GAN-generated static photos and face manipulations.</p>
+                </div>
+                <div class="tech-card future">
+                    <h4>Enhanced AI Accuracy</h4>
+                    <p>Transition to advanced Vision Transformer (ViT) architectures to capture more granular spatial inconsistencies.</p>
+                </div>
+                <div class="tech-card future">
+                    <h4>Explainable AI (Heatmaps)</h4>
+                    <p>Highlight exactly *where* on the face the AI detected synthetic artifacts via visual confidence heatmaps.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Creator Profile -->
+        <section class="about-section">
+            <div class="tech-card" style="display: flex; align-items: center; justify-content: space-between; padding: 2rem;">
+                <div>
+                    <h3 style="margin: 0; font-size: 1.5rem; border: none; padding: 0;">Built by Rasvanth</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem;">Aspiring ML Engineer</p>
+                </div>
+                <a href="https://github.com/Rasvanth28" target="_blank" class="btn btn-secondary" style="margin: 0; text-decoration: none;">GitHub</a>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

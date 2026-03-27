@@ -35,6 +35,7 @@ window.addEventListener("dragover", (e) => {
 const preview = document.getElementById("preview");
 const fileRegistry = new Set();
 window.uploadedFiles = [];
+window.summaryStats = { total: 0, fake: 0, real: 0, noFace: 0, totalTimeMs: 0 };
 
 function displayVideos(files) {
     for (const file of files) {
@@ -48,17 +49,24 @@ function displayVideos(files) {
             window.uploadedFiles.push(file);
             const li = document.createElement("li");
             li.id = `video-item-${fingerprint.replace(/[^a-zA-Z0-9]/g, '')}`;
+            const wrapper = document.createElement("div");
+            wrapper.className = "video-wrapper";
+
             const vid = document.createElement("video");
             vid.src = URL.createObjectURL(file);
             vid.controls = true;
-            vid.width = 300;
-            li.appendChild(vid);
-            li.appendChild(document.createTextNode(file.name));
+            wrapper.appendChild(vid);
             
             const statusDiv = document.createElement("div");
-            statusDiv.className = "video-status badge-container";
-            statusDiv.style.marginLeft = "auto";
-            li.appendChild(statusDiv);
+            statusDiv.className = "video-status overlay-card";
+            wrapper.appendChild(statusDiv);
+
+            li.appendChild(wrapper);
+
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "video-filename";
+            nameSpan.textContent = file.name;
+            li.appendChild(nameSpan);
 
             preview.appendChild(li);
         }
@@ -93,4 +101,10 @@ clearBtn.addEventListener("click", () => {
     fileInput.value = "";
     fileRegistry.clear();
     window.uploadedFiles = [];
+    window.summaryStats = { total: 0, fake: 0, real: 0, noFace: 0, totalTimeMs: 0 };
+    const summaryBoard = document.getElementById("summary-board");
+    if (summaryBoard) {
+        summaryBoard.innerHTML = "";
+        summaryBoard.classList.add("hidden");
+    }
 });

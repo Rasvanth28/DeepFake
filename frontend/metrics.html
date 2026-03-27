@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepFake Metrics & Accuracy</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=7">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob primary"></div>
+        <div class="blob secondary"></div>
+    </div>
+
+    <header class="glass-header">
+        <h1 class="logo">Deep<span>Fake</span></h1>
+        <nav>
+            <a href="index.html">Analyze</a>
+            <a href="metrics.html" class="active">Metrics</a>
+            <a href="about.html">About</a>
+        </nav>
+    </header>
+
+    <main class="container glass-panel" style="max-width: 1000px;">
+        <div class="header-text">
+            <h2>Model Performance Metrics</h2>
+            <p>A transparent look into the accuracy, validation data, and deep learning efficiency of our InceptionResNetV2 backbone.</p>
+        </div>
+
+        <section class="about-section" style="margin-top: 2rem;">
+            <div class="tech-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="tech-card" style="text-align: center;">
+                    <h3 style="font-size: 2.5rem; color: var(--success); margin: 0; padding: 0; border: none;">70.0%</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-weight: 600;">Validation Accuracy</p>
+                </div>
+                <div class="tech-card" style="text-align: center;">
+                    <h3 style="font-size: 2.5rem; color: var(--primary); margin: 0; padding: 0; border: none;">67.0%</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-weight: 600;">F1-Score</p>
+                </div>
+                <div class="tech-card" style="text-align: center;">
+                    <h3 style="font-size: 2.5rem; color: var(--accent); margin: 0; padding: 0; border: none;">0.87s</h3>
+                    <p style="color: var(--text-secondary); margin-top: 0.5rem; font-weight: 600;">Avg. Frame Extraction Speed</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" style="margin-top: 4rem;">
+            <h3>📊 Evaluation Breakdown</h3>
+            <div class="tech-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="tech-card">
+                    <h4>InceptionResNetV2 Transfer Learning</h4>
+                    <p style="margin-bottom: 1rem;">The model leverages a massive pre-trained dataset (ImageNet), fine-tuned specifically on facial manipulation artifacts. It achieves rapid convergence by freezing the base layers and solely training the dense decision heads.</p>
+                    <ul style="color: var(--text-secondary); line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>Optimizer:</strong> Adam (LR=0.0001)</li>
+                        <li><strong>Loss Function:</strong> Binary Crossentropy</li>
+                        <li><strong>Feature Vector:</strong> 128 Dimensions</li>
+                    </ul>
+                </div>
+                <div class="tech-card">
+                    <h4>Support Vector Machine (SVM)</h4>
+                    <p style="margin-bottom: 1rem;">Instead of a raw Softmax layer, the 128-dimensional dense vectors are passed into a highly calibrated Support Vector Machine. This creates a more distinct mathematical boundary separating Real vs. Fake features.</p>
+                    <ul style="color: var(--text-secondary); line-height: 1.8; margin-left: 1.5rem;">
+                        <li><strong>Kernel:</strong> RBF (Radial Basis Function)</li>
+                        <li><strong>C Parameter:</strong> 1.0 (Regularization)</li>
+                        <li><strong>Probability Maps:</strong> Calibrated using Platt Scaling</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" style="margin-top: 4rem; text-align: center;">
+            <div class="tech-card" style="display: inline-block; padding: 2rem 3rem;">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">View the full Training Notebooks & Code on GitHub</p>
+                <a href="https://github.com/Rasvanth28/DeepFake" target="_blank" class="btn btn-primary" style="text-decoration: none;">View Source Code</a>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
