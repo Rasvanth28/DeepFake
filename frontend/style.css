@@ -337,11 +337,13 @@ body {
 .timeline::before {
     content: '';
     position: absolute;
-    left: 40px;
-    top: 0;
-    bottom: 0;
+    left: 39px; /* Centered with the 40px icon */
+    top: 20px;
+    bottom: 20px;
     width: 2px;
-    background: linear-gradient(to bottom, var(--primary), var(--accent), transparent);
+    background: linear-gradient(to bottom, var(--primary), var(--accent), var(--primary));
+    opacity: 0.3;
+    z-index: 0;
 }
 .timeline-step {
     display: flex;
@@ -354,7 +356,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: var(--surface);
+    background: #0f111a; /* Match the panel background exactly */
     border: 2px solid var(--primary);
     display: flex;
     justify-content: center;
@@ -363,6 +365,7 @@ body {
     color: var(--primary);
     flex-shrink: 0;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    z-index: 2;
 }
 .step-content {
     background: rgba(255, 255, 255, 0.02);
