@@ -21,7 +21,7 @@ import joblib
 
 
 # %%
-detector_mtcnn = MTCNN()
+detector_mtcnn = None
 detector_haar = cv2.CascadeClassifier(
     cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
 )
@@ -77,8 +77,12 @@ def save_frames(row, base_dir="../storage/frames"):
 
 # %%
 def crop_face_mtcnn(img):
+    global detector_mtcnn
     if img is None:
         return
+
+    if detector_mtcnn is None:
+        detector_mtcnn = MTCNN()
 
     try:
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -228,8 +232,11 @@ if __name__ == "__main__":
     clf = SVC(kernel="rbf", probability=True, class_weight="balanced")
     clf.fit(X_train_s, y_train)
 
-    joblib.dump(clf, "deepfake_svm_model.pkl", compress=0)
-    joblib.dump(scaler, "feature_scaler.pkl", compress=0)
+    model_path = Path(__file__).resolve().parent / "../model"
+    os.makedirs(model_path, exist_ok=True)
+
+    joblib.dump(clf, model_path / "deepfake_svm_model.pkl", compress=0)
+    joblib.dump(scaler, model_path / "feature_scaler.pkl", compress=0)
 
     print("\n--- Pipeline Complete ---")
     print(f"SVM Accuracy on Test Set: {clf.score(X_test_s, y_test):.2%}")

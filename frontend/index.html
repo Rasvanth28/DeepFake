@@ -4,45 +4,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    <link rel="stylesheet" href="style.css">
+    <title>DeepFake Analyzer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 
 <body>
-    <div class="banner-header">
-        <header class="title">DEEP - FAKE</header>
+    <div class="background-blobs">
+        <div class="blob primary"></div>
+        <div class="blob secondary"></div>
     </div>
 
-    <div class="banner-nav">
+    <header class="glass-header">
+        <h1 class="logo">Deep<span>Fake</span></h1>
         <nav>
-            <a href="index.html" class="link-space">Home</a>
+            <a href="index.html" class="active">Analyze</a>
             <a href="about.html" target="_blank">About</a>
         </nav>
-    </div>
+    </header>
 
-    <div class="content">
-        <p>Paste Your Video Here</p>
-    </div>
+    <main class="container glass-panel">
+        <div class="header-text">
+            <h2>AI Video Analysis</h2>
+            <p>Paste or drop your video below to detect deepfakes instantly.</p>
+        </div>
 
-    <div class="drop-down">
-        <label id="drop-zone">
-            Drop videos here, or click to upload.
-            <input type="file" id="file-input" multiple accept="video/*" />
-        </label>
-        <ul id="preview"></ul>
-        <button id="clear-btn">Clear</button>
-        <button id="submit-btn" onclick="processAndSendFrames()">Analyze</button>
-    </div>
+        <div class="drop-down">
+            <label id="drop-zone" class="upload-area">
+                <div class="upload-content">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5l5-5 5 5m-5-5v12" />
+                    </svg>
+                    <span>Click or drag video here to upload</span>
+                </div>
+                <input type="file" id="file-input" multiple accept="video/*" />
+            </label>
+            <div class="action-buttons">
+                <button id="clear-btn" class="btn btn-secondary">Clear</button>
+                <button id="submit-btn" class="btn btn-primary" onclick="processAndSendFrames()">
+                    <span class="btn-text">Analyze Media</span>
+                    <div class="loader hidden"></div>
+                </button>
+            </div>
+            <ul id="preview"></ul>
+        </div>
 
-    <div class="result-section">
-        <p>Result: <spand id="result">
-        </p>
-        <p>Confidence: <span id="confidence"></span></p>
-    </div>
 
-    <script src="../backend/dragAndDrop.js"></script>
-    <script src="../backend/processAndTransfer.js"></script>
+    </main>
 
+    <script src="dragAndDrop.js"></script>
+    <script src="processAndTransfer.js"></script>
 </body>
 
 </html>

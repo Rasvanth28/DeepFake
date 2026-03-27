@@ -34,9 +34,9 @@ def save_frames(row, base_dir="../storage/temp/frames"):
 # %%
 def extract_features(imageList):
     features = []
-    for image in imageList:
+    for img_item in imageList:
         try:
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image_rgb = cv2.cvtColor(img_item, cv2.COLOR_BGR2RGB)
             image_resized = cv2.resize(image_rgb, (299, 299))
             x = image.img_to_array(image_resized)
             x = np.expand_dims(x, axis=0)
@@ -64,11 +64,11 @@ def predict(imageList):
     clf = joblib.load(path / "../model/deepfake_svm_model.pkl")
     scaler = joblib.load(path / "../model/feature_scaler.pkl")
 
-    X_scaled = scaler.transform(features.reshape(1, -1))
-    predicitons = clf.predict(X_scaled)
+    X_scaled = scaler.transform(features)
+    predictions = clf.predict(X_scaled)
     probabilities = clf.predict_proba(X_scaled)
 
-    final_prediction = pd.Series(predicitons).mode()[0]
+    final_prediction = pd.Series(predictions).mode()[0]
     avg_confidence = probabilities[:, 1].mean()
 
     label = "Fake" if final_prediction == 1 else "Real"
