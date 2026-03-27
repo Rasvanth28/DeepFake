@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+tensorflow
+opencv-python-headless
+pandas
+joblib
+scikit-learn
+mtcnn
+python-multipart
+tqdm
+numpy
+pathlib
