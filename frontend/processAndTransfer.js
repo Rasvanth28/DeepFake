@@ -14,11 +14,11 @@ async function processAndSendFrames() {
 
     submitBtn.disabled = true;
     if (loader) loader.classList.remove('hidden');
-    
+
     // Hide old summary if any, starting new batch
     const summaryBoard = document.getElementById("summary-board");
     if (summaryBoard) summaryBoard.classList.add('hidden');
-    
+
     let batchStartTime = performance.now();
     let anyProcessed = false;
 
@@ -32,7 +32,7 @@ async function processAndSendFrames() {
         if (statusDiv && statusDiv.dataset.analyzed === "true") {
             continue;
         }
-        
+
         anyProcessed = true;
         const videoStartTime = performance.now();
 
@@ -46,7 +46,7 @@ async function processAndSendFrames() {
 
         const video = document.createElement('video');
         video.src = URL.createObjectURL(currentFile);
-        
+
         const isLoaded = await new Promise(resolve => {
             video.onloadedmetadata = () => resolve(true);
             video.onerror = () => resolve(false);
@@ -60,12 +60,12 @@ async function processAndSendFrames() {
             if (btnText) btnText.innerText = `Analyzing Video ${v + 1}...`;
             URL.revokeObjectURL(video.src);
             video.remove();
-            
+
             const reqData = new FormData();
             reqData.append('video', currentFile);
-            
+
             try {
-                const response = await fetch('http://127.0.0.1:8000/predict_video', {
+                const response = await fetch('http://127.0.0.1:8082/predict_video', {
                     method: 'POST',
                     body: reqData
                 });
@@ -76,7 +76,7 @@ async function processAndSendFrames() {
                         const processTimeSec = (performance.now() - videoStartTime) / 1000;
                         const processTimeStr = processTimeSec < 60 ? `${processTimeSec.toFixed(2)}s` : `${Math.floor(processTimeSec / 60)}m ${Math.floor(processTimeSec % 60)}s`;
                         window.summaryStats.total++;
-                        
+
                         if (result.prediction === "No faces detected" || result.prediction.includes("Error")) {
                             if (result.prediction === "No faces detected") window.summaryStats.noFace++;
                             statusDiv.innerHTML = `
@@ -87,7 +87,7 @@ async function processAndSendFrames() {
                         } else {
                             const isFake = result.prediction.toLowerCase().includes('fake');
                             if (isFake) window.summaryStats.fake++; else window.summaryStats.real++;
-                            
+
                             const displayConfidence = isFake ? result.confidence : 1 - result.confidence;
                             statusDiv.innerHTML = `
                                 <div class="overlay-title ${isFake ? 'fake' : 'real'}">${result.prediction}</div>
@@ -124,7 +124,7 @@ async function processAndSendFrames() {
                 video.onerror = () => resolve(false);
                 setTimeout(() => resolve(false), 5000);
             });
-            
+
             if (!seekSuccess) continue;
 
             const canvas = document.createElement('canvas')
@@ -149,7 +149,7 @@ async function processAndSendFrames() {
         if (btnText) btnText.innerText = `Analyzing Video ${v + 1}...`;
 
         try {
-            const response = await fetch('http://127.0.0.1:8000/predict', {
+            const response = await fetch('http://127.0.0.1:8082/predict', {
                 method: 'POST',
                 body: formData
             });
@@ -160,7 +160,7 @@ async function processAndSendFrames() {
                     const processTimeSec = (performance.now() - videoStartTime) / 1000;
                     const processTimeStr = processTimeSec < 60 ? `${processTimeSec.toFixed(2)}s` : `${Math.floor(processTimeSec / 60)}m ${Math.floor(processTimeSec % 60)}s`;
                     window.summaryStats.total++;
-                    
+
                     if (result.prediction === "No faces detected" || result.prediction.includes("Error")) {
                         if (result.prediction === "No faces detected") window.summaryStats.noFace++;
                         statusDiv.innerHTML = `
@@ -171,7 +171,7 @@ async function processAndSendFrames() {
                     } else {
                         const isFake = result.prediction.toLowerCase().includes('fake');
                         if (isFake) window.summaryStats.fake++; else window.summaryStats.real++;
-                        
+
                         const displayConfidence = isFake ? result.confidence : 1 - result.confidence;
                         statusDiv.innerHTML = `
                             <div class="overlay-title ${isFake ? 'fake' : 'real'}">${result.prediction}</div>
@@ -198,10 +198,10 @@ async function processAndSendFrames() {
     if (anyProcessed) {
         let batchEndTime = performance.now();
         window.summaryStats.totalTimeMs += (batchEndTime - batchStartTime);
-        
+
         if (summaryBoard) {
             const stats = window.summaryStats;
-            
+
             const formatTime = (ms) => {
                 const totalS = ms / 1000;
                 if (totalS < 60) return `${totalS.toFixed(2)}s`;
@@ -211,7 +211,7 @@ async function processAndSendFrames() {
             const avgMs = stats.total > 0 ? (stats.totalTimeMs / stats.total) : 0;
             const totalTimeStr = formatTime(stats.totalTimeMs);
             const avgTimeStr = formatTime(avgMs);
-            
+
             summaryBoard.innerHTML = `
                 <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; font-size: 1.5rem;">Batch Analysis Complete</h3>
                 <div class="badge-container" style="gap: 1.5rem;">

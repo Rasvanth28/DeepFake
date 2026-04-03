@@ -6,10 +6,7 @@ import cv2
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
-import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-from mtcnn import MTCNN
 import random
 from tensorflow.keras.applications import InceptionResNetV2
 from tensorflow.keras.applications.inception_resnet_v2 import preprocess_input
@@ -25,7 +22,16 @@ detector_mtcnn = None
 detector_haar = cv2.CascadeClassifier(
     cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
 )
-base_model = InceptionResNetV2(weights="imagenet", include_top=False, pooling="avg")
+
+_base_model = None
+
+def get_base_model():
+    global _base_model
+    if _base_model is None:
+        from tensorflow.keras.applications import InceptionResNetV2
+        print("Loading InceptionResNetV2 weights...")
+        _base_model = InceptionResNetV2(weights="imagenet", include_top=False, pooling="avg")
+    return _base_model
 
 
 # %%
@@ -82,6 +88,7 @@ def crop_face_mtcnn(img):
         return
 
     if detector_mtcnn is None:
+        from mtcnn import MTCNN
         detector_mtcnn = MTCNN()
 
     try:
@@ -137,7 +144,7 @@ def extract_features(directory, sample_count=1000):
                 x = image.img_to_array(img)
                 x = np.expand_dims(x, axis=0)
                 x = preprocess_input(x)
-                feature = base_model.predict(x, verbose=0)
+                feature = get_base_model().predict(x, verbose=0)
                 features.append(feature.flatten())
                 labels.append(0 if label_name == "real" else 1)
             except Exception as e:

@@ -5,7 +5,7 @@ import cv2
 import os
 from tqdm import tqdm
 import pandas as pd
-from preTraining import is_metadata_fake, crop_face_mtcnn, base_model
+from preTraining import is_metadata_fake, crop_face_mtcnn, get_base_model
 import numpy as np
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.inception_resnet_v2 import preprocess_input
@@ -41,7 +41,7 @@ def extract_features(imageList):
             x = image.img_to_array(image_resized)
             x = np.expand_dims(x, axis=0)
             x = preprocess_input(x)
-            feature = base_model.predict(x, verbose=0)
+            feature = get_base_model().predict(x, verbose=0)
             features.append(feature.flatten())
         except Exception as e:
             print(f"Error processing image matrix {e}")
@@ -61,8 +61,9 @@ def predict(imageList):
     path = Path(__file__).resolve().parent
 
     features = extract_features(faceImages)
-    clf = joblib.load(path / "../model/deepfake_svm_model.pkl")
-    scaler = joblib.load(path / "../model/feature_scaler.pkl")
+    model_dir = path / "../model" if (path / "../model").exists() else path / "model"
+    clf = joblib.load(model_dir / "deepfake_svm_model.pkl")
+    scaler = joblib.load(model_dir / "feature_scaler.pkl")
 
     X_scaled = scaler.transform(features)
     predictions = clf.predict(X_scaled)

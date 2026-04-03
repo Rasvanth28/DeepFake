@@ -30,3 +30,6 @@ ml/dataset
 *.ipynb
 storage
 faces
+codebase_errors.md
+SETUP.md
+DEPLOYMENT.md

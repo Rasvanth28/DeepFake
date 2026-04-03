@@ -3,10 +3,10 @@ uvicorn
 tensorflow
 opencv-python-headless
 pandas
-joblib
+joblib>=1.3.0
 scikit-learn
 mtcnn
 python-multipart
 tqdm
-numpy
+numpy<2.0.0
 pathlib
