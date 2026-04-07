@@ -65,7 +65,7 @@ async function processAndSendFrames() {
             reqData.append('video', currentFile);
 
             try {
-                const response = await fetch('http://127.0.0.1:8082/predict_video', {
+                const response = await fetch('https://bettercallkc-deepfake.hf.space/predict_video', {
                     method: 'POST',
                     body: reqData
                 });
@@ -149,7 +149,7 @@ async function processAndSendFrames() {
         if (btnText) btnText.innerText = `Analyzing Video ${v + 1}...`;
 
         try {
-            const response = await fetch('http://127.0.0.1:8082/predict', {
+            const response = await fetch('https://bettercallkc-deepfake.hf.space/predict', {
                 method: 'POST',
                 body: formData
             });
