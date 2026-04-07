@@ -36,3 +36,4 @@ DEPLOYMENT.md
 generate_assignment.py
 Assignment-2.pdf
 Assignment.docx
+__pycache__
