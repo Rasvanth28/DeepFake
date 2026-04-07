@@ -45,14 +45,6 @@ An AI-driven media authentication platform designed to detect synthetic and mani
 
 ---
 
-## 📸 Screenshots
-
-| Analyze Interface (Home) | Metrics Dashboard |
-|:---:|:---:|
-| ![Home Page](https://raw.githubusercontent.com/Rasvanth28/DeepFake-Frontend/main/home_analyze_page.png) | ![Metrics Page](https://raw.githubusercontent.com/Rasvanth28/DeepFake-Frontend/main/metrics_page.png) |
-
----
-
 ## 🚀 Getting Started
 
 ### Local Frontend Development
