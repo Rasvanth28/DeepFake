@@ -1,89 +1,61 @@
-# DeepFake Analyzer 🛡️
+# DeepFake Analyzer: A Hybrid Heuristic and Deep Learning Approach for Synthetic Media Detection
 
+![TensorFlow](https://img.shields.io/badge/AI-TensorFlow-FF6F00?logo=tensorflow&logoColor=white)
+![OpenCV](https://img.shields.io/badge/Computer_Vision-OpenCV-5C3EE8?logo=opencv&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/ML-scikit--learn-F7931E?logo=scikit-learn&logoColor=white)
+![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![TensorFlow](https://img.shields.io/badge/AI-TensorFlow-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
 
-An AI-driven media authentication platform designed to detect synthetic and manipulated video content with high precision.
+## Abstract
+This repository implements a robust pipeline for the detection of synthetically manipulated video content (deepfakes). By leveraging a dual-stage heuristic and deep learning architecture, the model solves the challenge of authenticating digital media in real-time, effectively mitigating the spread of advanced digital misinformation.
 
----
+## Architecture & Pipeline
+The detection framework employs a modular, multi-stage pipeline designed for computational efficiency and high precision:
 
-## 🔗 Project Links
-- **Live Frontend:** [https://rasvanth28.github.io/DeepFake-Frontend/index.html](https://rasvanth28.github.io/DeepFake-Frontend/index.html)
-- **GitHub Repository:** [https://github.com/Rasvanth28/DeepFake](https://github.com/Rasvanth28/DeepFake)
-- **ML Backend Hosting:** [Hugging Face Space](https://bettercallkc-deepfake.hf.space)
+1. **Metadata Screening (Heuristic Filtering):** Acts as an initial low-compute sieve, isolating suspect videos based on anomalous framerates (e.g., deviations from standard 24/30 FPS) often introduced during synthetic generation.
+2. **Temporal Frame Sampling:** Uniformly extracts 5 frames across the video timeline, ensuring temporal representation without the computational overhead of processing every frame.
+3. **Face Detection & Alignment:** Utilizes a Multi-Task Cascaded Convolutional Neural Network (MTCNN) to precisely localize and crop facial regions, employing a Haar Cascade fallback mechanism to maximize detection recall. Extracted faces are resized to 224x224 pixels.
+4. **Deep Feature Extraction:** Preprocessed frames are passed through an `InceptionResNetV2` backbone, initialized with ImageNet weights. The network acts as a robust feature extractor, producing flattened, high-dimensional latent representations of the facial regions.
+5. **Classification:** Extracted embeddings are normalized via standard scaling (`StandardScaler`) and classified using a Support Vector Machine (SVM) equipped with a Radial Basis Function (RBF) kernel. The SVM provides binary categorization ("real" or "fake") utilizing a probability distribution model optimized for balanced class weights.
 
----
+## Technology Stack
+- **TensorFlow / Keras:** For deep feature extraction via the `InceptionResNetV2` architecture.
+- **scikit-learn:** For predictive modeling (SVM) and standardization pipelines.
+- **OpenCV & MTCNN:** For advanced media processing, temporal sampling, and facial feature localization.
+- **FastAPI / Uvicorn:** For asynchronous, high-throughput RESTful API inference serving.
+- **Pandas & NumPy:** For robust matrix operations and dataset manipulation.
+- **Joblib:** For efficient serialization of statistical models and scalers.
 
-## ✨ Key Features
-- **Instant Video Analysis:** Drag-and-drop or upload videos to detect deepfakes in seconds.
-- **Temporal Frame Sampling:** Automatically extracts 5 key frames across the video duration for comprehensive analysis.
-- **Real-Time Progress Feedback:** Visual indicators for frame extraction and AI analysis stages.
-- **Glassmorphic UI/UX:** A modern, premium dark-themed interface with interactive canvas animations.
-- **Metrics Dashboard:** Tracks analysis history, authenticity ratios, and processing performance.
-- **Memory Optimized:** Client-side resizing (224x224) reduces network payload and improves latency.
+## Getting Started
 
----
+Follow these steps to replicate the environment and run the inference server.
 
-## 🛠️ Technology Stack
+### Prerequisites
+- Python 3.9+
+- Virtual Environment (recommended)
 
-### Frontend
-- **HTML5 & CSS3:** Custom Glassmorphic design with backdrop-filters.
-- **JavaScript (ES6+):** Asynchronous file processing and API integration.
-- **Canvas API:** High-performance neural link background and frame preprocessing.
-
-### Backend (ML)
-- **FastAPI:** High-performance asynchronous Python framework.
-- **TensorFlow:** Deep learning model for classification.
-- **OpenCV:** Advanced media processing and frame extraction.
-- **MTCNN:** Face detection and alignment.
-
-### DevOps
-- **Docker:** Containerized backend for consistent deployment.
-- **GitHub Pages:** Static frontend hosting.
-- **Hugging Face Spaces:** Cloud hosting for the machine learning backend.
-
----
-
-## 🚀 Getting Started
-
-### Local Frontend Development
+### Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/Rasvanth28/DeepFake.git
-   ```
-2. Navigate to the `frontend` directory:
-   ```bash
-   cd DeepFake/frontend
-   ```
-3. Open `index.html` in your browser (or use a local server like Live Server).
-
-### Local Backend Development
-1. Navigate to the `ml` directory:
-   ```bash
-   cd DeepFake/ml
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Start the FastAPI server:
-   ```bash
-   uvicorn script.app:app --reload
+   cd DeepFake
    ```
 
----
+2. Initialize and activate a virtual environment:
+   ```bash
+   python -m venv ml/.venv
+   source ml/.venv/bin/activate  # On Windows use: ml\.venv\Scripts\activate
+   ```
 
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+3. Install the core dependencies:
+   ```bash
+   pip install -r ml/requirements.txt
+   ```
 
----
-
-## 💡 Acknowledgements
-- **Research:** Built using principles of deep learning for digital media forensics.
-- **Inspiration:** Developed as a solution for modern digital misinformation challenges.
+### Running Inference
+To start the model inference server:
+```bash
+cd ml/script
+uvicorn app:app --reload
+```
+The API will be accessible at `http://127.0.0.1:8000`. You can test the endpoints via the built-in Swagger documentation at `http://127.0.0.1:8000/docs`.
